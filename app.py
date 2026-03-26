@@ -3,7 +3,7 @@ import yfinance as yf
 
 app = Flask(__name__)
 
-STOCKS = ["AAPL", "META", "PBR"]
+STOCKS = ["AAPL", "META", "PBR", "IBIT"]
 
 @app.route("/")
 def index():
