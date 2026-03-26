@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cotações de Ações</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+        h1 { margin-bottom: 30px; font-size: 2rem; }
+        .cards {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 30px 40px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .card .symbol {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        .card .price {
+            font-size: 2rem;
+            margin-top: 12px;
+            color: #4ade80;
+        }
+        .card .currency {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+        .refresh {
+            margin-top: 30px;
+            padding: 10px 24px;
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .refresh:hover { background: #7dd3fc; }
+    </style>
+</head>
+<body>
+    <h1>Cotações de Ações</h1>
+    <div class="cards">
+        {% for q in quotes %}
+        <div class="card">
+            <div class="symbol">{{ q.symbol }}</div>
+            <div class="price">{{ q.price }}</div>
+            <div class="currency">{{ q.currency }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    <a class="refresh" href="/">Atualizar</a>
+</body>
+</html>
