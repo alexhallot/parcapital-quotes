@@ -1,74 +1,332 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Cotações de Ações</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-        }
-        h1 { margin-bottom: 30px; font-size: 2rem; }
-        .cards {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .card {
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 30px 40px;
-            text-align: center;
-            min-width: 180px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-        .card .symbol {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #38bdf8;
-        }
-        .card .price {
-            font-size: 2rem;
-            margin-top: 12px;
-            color: #4ade80;
-        }
-        .card .currency {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-top: 6px;
-        }
-        .refresh {
-            margin-top: 30px;
-            padding: 10px 24px;
-            background: #38bdf8;
-            color: #0f172a;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .refresh:hover { background: #7dd3fc; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAR Capital — Market Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;color:#1a1a1a;-webkit-font-smoothing:antialiased;background:#fff}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(10px);border-bottom:1px solid #f0f0f0}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;padding:0 5vw;height:60px;max-width:1400px;margin:0 auto}
+.nav-logo{display:flex;align-items:center;text-decoration:none}
+.nav-right{display:flex;align-items:center;gap:24px}
+.nav-link{font-size:13px;color:#666;text-decoration:none;transition:color .2s;cursor:pointer}
+.nav-link:hover{color:#0d1526}
+.nav-link.active{color:#0d1526;font-weight:600}
+
+.lang-toggle{position:relative;display:inline-block;margin-left:12px;z-index:200}
+.lang-active{font-size:12px;font-weight:600;padding:6px 14px 6px 12px;background:#0d1526;color:#fff;border:none;border-radius:6px;cursor:pointer;letter-spacing:1px;display:flex;align-items:center;gap:4px;font-family:inherit}
+.lang-arrow{border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid #fff;transition:transform .2s}
+.lang-drop{display:none;position:absolute;top:calc(100% + 4px);right:0;background:#fff;border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:60px}
+.lang-drop.open{display:flex;flex-direction:column}
+.lang-opt{font-size:12px;font-weight:600;padding:10px 20px;background:transparent;border:none;color:#666;cursor:pointer;text-align:center;letter-spacing:1px;transition:background .15s;font-family:inherit}
+.lang-opt:hover{background:#f0f0f0;color:#0d1526}
+
+[data-l]{display:none !important}
+
+.hero{padding:56px 5vw 32px;max-width:1400px;margin:0 auto}
+.sec-label{font-size:12px;font-weight:700;color:#b8953f;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.hero h1{font-size:clamp(30px,2.8vw,44px);font-weight:700;line-height:1.15;letter-spacing:-1px;color:#0d1526;margin-bottom:12px}
+.hero h1 em{color:#b8953f;font-style:normal}
+.hero .sub{font-size:15px;color:#888;max-width:640px;line-height:1.6}
+.hero-meta{display:flex;gap:24px;margin-top:20px;font-size:12px;color:#888;flex-wrap:wrap}
+.hero-meta .dot{display:inline-block;width:6px;height:6px;background:#1a7a4c;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+.cat-tabs-wrap{max-width:1400px;margin:0 auto;padding:0 5vw 24px}
+.cat-tabs{display:flex;gap:4px;padding:6px;background:#fafafa;border:1px solid #eee;border-radius:10px}
+.cat-tab{flex:1;text-align:center;padding:10px 8px;border-radius:7px;cursor:pointer;color:#888;font-size:13px;font-weight:500;transition:all .2s;user-select:none}
+.cat-tab:hover{color:#0d1526;background:#fff}
+.cat-tab.active{background:#0d1526;color:#fff;font-weight:600}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:0 5vw;max-width:1400px;margin:0 auto 32px}
+.tile{background:#fff;border:1px solid #eee;border-radius:12px;padding:18px 20px;transition:border-color .2s,transform .15s;cursor:pointer}
+.tile:hover{border-color:#b8953f;transform:translateY(-2px)}
+.tile .tile-num{font-size:11px;font-weight:700;color:#b8953f;letter-spacing:1px;margin-bottom:8px}
+.tile .tile-name{font-size:14px;font-weight:700;color:#0d1526;margin-bottom:10px}
+.tile .tile-price{font-size:22px;font-weight:700;color:#0d1526;font-variant-numeric:tabular-nums;margin-bottom:6px}
+.tile .tile-chg{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.chg-up{color:#1a7a4c;background:#f0f7f4;border:1px solid #d4eede}
+.chg-down{color:#cc4444;background:#fcf0f0;border:1px solid #f0d4d4}
+
+.stats-bar{background:#0d1526;padding:0 5vw;display:flex;justify-content:center;margin-bottom:32px}
+.stat-item{flex:1;padding:28px 16px;text-align:center;border-right:1px solid rgba(255,255,255,0.06);max-width:280px}
+.stat-item:last-child{border-right:none}
+.stat-num{font-size:clamp(22px,2vw,28px);font-weight:700;color:#b8953f;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.stat-label{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:.5px}
+
+.table-wrap{padding:0 5vw 80px;max-width:1400px;margin:0 auto}
+.table-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}
+.table-head h2{font-size:22px;font-weight:700;color:#0d1526;letter-spacing:-0.3px}
+.table-head .filters{display:flex;gap:10px;align-items:center;font-size:12px}
+.filter-select{background:#fff;border:1px solid #ddd;border-radius:6px;padding:6px 12px;font-family:inherit;font-size:12px;color:#0d1526;cursor:pointer}
+.kmb{display:inline-flex;border:1px solid #ddd;border-radius:6px;overflow:hidden;background:#fff}
+.kmb span{padding:6px 12px;color:#888;cursor:pointer;border-right:1px solid #eee;font-weight:600;font-size:11px;user-select:none}
+.kmb span:last-child{border-right:none}
+.kmb span.active{background:#0d1526;color:#fff}
+
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden}
+thead th{text-align:left;padding:14px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#888;font-weight:700;border-bottom:2px solid #eee;background:#fafafa}
+thead th.num{text-align:right}
+tbody td{padding:14px 16px;border-bottom:1px solid #f0f0f0;font-size:13px;color:#0d1526;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:#fafafa}
+tbody tr:last-child td{border-bottom:none}
+.num{text-align:right}
+.ticker-cell{display:flex;flex-direction:column}
+.ticker-cell .sym{font-weight:700;color:#0d1526;font-size:14px}
+.ticker-cell .sub{font-size:11px;color:#888;margin-top:2px;letter-spacing:.2px}
+.pct-up{color:#1a7a4c;font-weight:700}
+.pct-down{color:#cc4444;font-weight:700}
+.spark{display:block}
+
+.cta-bottom{padding:80px 5vw;text-align:center;background:#0d1526}
+.cta-bottom h2{font-size:28px;font-weight:700;color:#fff;margin-bottom:10px;letter-spacing:-0.3px}
+.cta-bottom h2 em{color:#b8953f;font-style:normal}
+.cta-bottom p{font-size:14px;color:rgba(255,255,255,0.4);margin-bottom:28px}
+.cta-btn{display:inline-block;padding:13px 36px;background:#b8953f;color:#0d1526;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;text-decoration:none;transition:background .2s;font-family:inherit}
+.cta-btn:hover{background:#d4b35c}
+
+.footer{padding:32px 5vw;background:#080e1a;font-size:11px;color:rgba(255,255,255,0.3);line-height:1.7;text-align:center}
+
+@media(max-width:900px){
+.cat-tabs{flex-wrap:wrap}
+.cat-tab{flex:1 1 30%}
+.stats-bar{flex-wrap:wrap}.stat-item{flex:1 1 50%;max-width:none}
+}
+</style>
 </head>
 <body>
-    <h1>Cotações de Ações</h1>
-    <div class="cards">
-        {% for q in quotes %}
-        <div class="card">
-            <div class="symbol">{{ q.symbol }}</div>
-            <div class="price">{{ q.price }}</div>
-            <div class="currency">{{ q.currency }}</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <svg width="280" height="36" viewBox="0 0 220 28">
+        <rect x="0" y="2" width="4.5" height="24" rx="0.5" fill="#0d1526"/>
+        <rect x="7" y="2" width="4.5" height="24" rx="0.5" fill="#0d1526" opacity="0.5"/>
+        <rect x="14" y="2" width="4.5" height="24" rx="0.5" fill="#b8953f"/>
+        <text x="28" y="19" font-family="DM Sans,sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="#0d1526">PAR</text>
+        <text x="76" y="19" font-family="DM Sans,sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="#b8953f">Capital</text>
+      </svg>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="https://www.parcapitalwm.com" target="_blank" rel="noopener">
+        <span data-l="pt">Plataforma</span><span data-l="en">Platform</span><span data-l="es">Plataforma</span>
+      </a>
+      <a class="nav-link active" href="#">Dashboard</a>
+      <div class="lang-toggle" id="lang-toggle">
+        <button class="lang-active" id="lang-btn" onclick="toggleLangDrop()">PT <span class="lang-arrow"></span></button>
+        <div class="lang-drop" id="lang-drop">
+          <button class="lang-opt" onclick="pickLang('pt')">PT</button>
+          <button class="lang-opt" onclick="pickLang('en')">EN</button>
+          <button class="lang-opt" onclick="pickLang('es')">ES</button>
         </div>
-        {% endfor %}
+      </div>
     </div>
-    <a class="refresh" href="/">Atualizar</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="sec-label">Market Dashboard</div>
+  <div data-l="pt"><h1>Indicadores <em>em tempo real</em></h1></div>
+  <div data-l="en"><h1>Real-time <em>market indicators</em></h1></div>
+  <div data-l="es"><h1>Indicadores <em>en tiempo real</em></h1></div>
+  <p class="sub" data-l="pt">Acompanhamento institucional dos principais mercados globais: renda variável, renda fixa, energia, commodities, ETFs, FX e cripto. Dados via Interactive Brokers.</p>
+  <p class="sub" data-l="en">Institutional monitoring of the world's main markets: equities, fixed income, energy, commodities, ETFs, FX and crypto. Data via Interactive Brokers.</p>
+  <p class="sub" data-l="es">Seguimiento institucional de los principales mercados globales: renta variable, renta fija, energía, commodities, ETFs, FX y cripto. Datos vía Interactive Brokers.</p>
+  <div class="hero-meta">
+    <span>
+      <span class="dot"></span>
+      <span data-l="pt">Atualizado em</span><span data-l="en">Updated on</span><span data-l="es">Actualizado el</span>
+      {{ updated_at }}
+    </span>
+    <span>
+      <span data-l="pt">Fonte:</span><span data-l="en">Source:</span><span data-l="es">Fuente:</span>
+      yfinance · IB
+    </span>
+  </div>
+</section>
+
+<div class="cat-tabs-wrap">
+  <div class="cat-tabs" id="cat-tabs">
+    <div class="cat-tab active" data-cat="all">
+      <span data-l="pt">Todos</span><span data-l="en">All</span><span data-l="es">Todos</span>
+    </div>
+    {% for key, labels in cat_labels.items() %}
+    <div class="cat-tab" data-cat="{{ key }}">
+      <span data-l="pt">{{ labels.pt }}</span>
+      <span data-l="en">{{ labels.en }}</span>
+      <span data-l="es">{{ labels.es }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="tiles">
+  {% for t in tiles %}
+  <div class="tile">
+    <div class="tile-num">{{ "%02d"|format(loop.index) }}</div>
+    <div class="tile-name">{{ t.name }}</div>
+    <div class="tile-price">{{ t.price_str }}</div>
+    <span class="tile-chg {{ 'chg-up' if t.daily_up else 'chg-down' }}">{{ t.daily_str }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">160+</div>
+    <div class="stat-label" data-l="pt">Mercados globais</div>
+    <div class="stat-label" data-l="en">Global markets</div>
+    <div class="stat-label" data-l="es">Mercados globales</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">34</div>
+    <div class="stat-label" data-l="pt">Países</div>
+    <div class="stat-label" data-l="en">Countries</div>
+    <div class="stat-label" data-l="es">Países</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">28</div>
+    <div class="stat-label" data-l="pt">Moedas</div>
+    <div class="stat-label" data-l="en">Currencies</div>
+    <div class="stat-label" data-l="es">Monedas</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">SIPC</div>
+    <div class="stat-label" data-l="pt">Proteção até USD 500k</div>
+    <div class="stat-label" data-l="en">Protection up to USD 500k</div>
+    <div class="stat-label" data-l="es">Protección hasta USD 500k</div>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div class="table-head">
+    <h2>
+      <span data-l="pt">Visão consolidada</span>
+      <span data-l="en">Consolidated view</span>
+      <span data-l="es">Vista consolidada</span>
+    </h2>
+    <div class="filters">
+      <select class="filter-select"><option>USD</option><option>BRL</option><option>EUR</option></select>
+      <div class="kmb"><span>K</span><span class="active">M</span><span>B</span></div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th><span data-l="pt">Ativo</span><span data-l="en">Asset</span><span data-l="es">Activo</span></th>
+        <th class="num"><span data-l="pt">Preço</span><span data-l="en">Price</span><span data-l="es">Precio</span></th>
+        <th class="num">Daily %</th>
+        <th><span data-l="pt">Tendência 30d</span><span data-l="en">Trend 30d</span><span data-l="es">Tendencia 30d</span></th>
+        <th class="num">Volume</th>
+        <th class="num"><span data-l="pt">Var 1M</span><span data-l="en">1M Chg</span><span data-l="es">Var 1M</span></th>
+        <th class="num"><span data-l="pt">Var 1Y</span><span data-l="en">1Y Chg</span><span data-l="es">Var 1Y</span></th>
+        <th class="num">Low 52w</th>
+        <th class="num">High 52w</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      {% for cat, items in data.items() %}
+        {% for item in items %}
+        <tr data-cat="{{ cat }}">
+          <td>
+            <div class="ticker-cell">
+              <span class="sym">{{ item.name }}</span>
+              <span class="sub">{{ item.ticker }} · {{ item.sub }}</span>
+            </div>
+          </td>
+          <td class="num">{{ item.price_str }}</td>
+          <td class="num {{ 'pct-up' if item.daily_up else 'pct-down' }}">{{ item.daily_str }}</td>
+          <td>
+            <svg class="spark" width="140" height="36" viewBox="0 0 140 36">
+              <polyline fill="{{ item.spark.fill }}" stroke="none" points="{{ item.spark.area }}"/>
+              <polyline fill="none" stroke="{{ item.spark.color }}" stroke-width="1.5" points="{{ item.spark.line }}"/>
+            </svg>
+          </td>
+          <td class="num">{{ item.vol_str }}</td>
+          <td class="num {{ 'pct-up' if item.v1m_up else 'pct-down' }}">{{ item.v1m_str }}</td>
+          <td class="num {{ 'pct-up' if item.v1y_up else 'pct-down' }}">{{ item.v1y_str }}</td>
+          <td class="num">{{ item.low_str }}</td>
+          <td class="num">{{ item.high_str }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<section class="cta-bottom">
+  <div data-l="pt"><h2>Pronto para investir <em>como institucional?</em></h2><p>Acesso direto a 160+ mercados globais via Interactive Brokers.</p></div>
+  <div data-l="en"><h2>Ready to invest <em>like an institution?</em></h2><p>Direct access to 160+ global markets via Interactive Brokers.</p></div>
+  <div data-l="es"><h2>Listo para invertir <em>como institucional?</em></h2><p>Acceso directo a 160+ mercados globales vía Interactive Brokers.</p></div>
+  <a class="cta-btn" href="mailto:info@parcapitalwm.com">
+    <span data-l="pt">Abrir conta</span><span data-l="en">Open account</span><span data-l="es">Abrir cuenta</span>
+  </a>
+</section>
+
+<footer class="footer">
+  <span data-l="pt">PAR Capital SA — gestora regulada BCU · Custódia Interactive Brokers · Proteção SIPC até USD 500k</span>
+  <span data-l="en">PAR Capital SA — BCU-regulated asset manager · Custody by Interactive Brokers · SIPC protection up to USD 500k</span>
+  <span data-l="es">PAR Capital SA — gestora regulada por el BCU · Custodia Interactive Brokers · Protección SIPC hasta USD 500k</span>
+</footer>
+
+<script>
+// Category filter
+var tabs = document.querySelectorAll('.cat-tab');
+var rows = document.querySelectorAll('#tbody tr');
+tabs.forEach(function(tab){
+  tab.addEventListener('click', function(){
+    tabs.forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    var cat = tab.getAttribute('data-cat');
+    rows.forEach(function(r){
+      r.style.display = (cat === 'all' || r.getAttribute('data-cat') === cat) ? '' : 'none';
+    });
+  });
+});
+
+// Language toggle (mirrors PAR Capital landing)
+function toggleLangDrop() {
+  document.getElementById('lang-drop').classList.toggle('open');
+}
+function pickLang(lang) {
+  document.getElementById('lang-drop').classList.remove('open');
+  document.getElementById('lang-btn').innerHTML = lang.toUpperCase() + ' <span class="lang-arrow"></span>';
+  switchLang(lang);
+}
+document.addEventListener('click', function(e) {
+  var toggle = document.getElementById('lang-toggle');
+  if (!toggle.contains(e.target)) {
+    document.getElementById('lang-drop').classList.remove('open');
+  }
+});
+function switchLang(lang) {
+  var els = document.querySelectorAll('[data-l]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var show = el.getAttribute('data-l') === lang;
+    var tag = el.tagName.toLowerCase();
+    if (show) {
+      if (tag === 'span' || tag === 'a' || tag === 'em') {
+        el.style.cssText = 'display:inline !important';
+      } else {
+        el.style.cssText = 'display:block !important';
+      }
+    } else {
+      el.style.cssText = 'display:none !important';
+    }
+  }
+}
+var browserLang = (navigator.language || navigator.userLanguage || 'pt').toLowerCase();
+var detectedLang = 'en';
+if (browserLang.indexOf('pt') === 0) { detectedLang = 'pt'; }
+else if (browserLang.indexOf('es') === 0) { detectedLang = 'es'; }
+switchLang(detectedLang);
+document.getElementById('lang-btn').innerHTML = detectedLang.toUpperCase() + ' <span class="lang-arrow"></span>';
+</script>
+
 </body>
 </html>
