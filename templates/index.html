@@ -25,6 +25,16 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a1a;-webkit-font-smoothing:antia
 .lang-opt{font-size:12px;font-weight:600;padding:10px 20px;background:transparent;border:none;color:#666;cursor:pointer;text-align:center;letter-spacing:1px;transition:background .15s;font-family:inherit}
 .lang-opt:hover{background:#f0f0f0;color:#0d1526}
 
+.nav-burger{display:none;flex-direction:column;justify-content:center;background:none;border:none;cursor:pointer;padding:6px;gap:5px;margin-right:4px}
+.nav-burger span{display:block;width:22px;height:2px;background:#0d1526;transition:transform .2s,opacity .2s}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-drawer{display:none;flex-direction:column;background:#fff;border-bottom:1px solid #f0f0f0;padding:8px 5vw 16px}
+.nav-drawer .nav-link{padding:12px 0;font-size:14px;border-bottom:1px solid #f5f5f5}
+.nav-drawer .nav-link:last-child{border-bottom:none}
+.nav-drawer.open{display:flex}
+
 [data-l]{display:none !important}
 
 .hero{padding:56px 5vw 32px;max-width:1400px;margin:0 auto}
@@ -79,7 +89,11 @@ tbody tr:last-child td{border-bottom:none}
 .ticker-cell .sub{font-size:11px;color:#888;margin-top:2px;letter-spacing:.2px}
 .pct-up{color:#1a7a4c;font-weight:700}
 .pct-down{color:#cc4444;font-weight:700}
-.spark{display:block}
+.spark{display:block;max-width:100%}
+.spark-cell{width:160px}
+tr.cat-divider td{padding:10px 16px;background:#fafafa;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#b8953f;border-top:1px solid #eee;border-bottom:1px solid #eee}
+tr.cat-divider:hover{background:#fafafa}
+tr.cat-divider td::before{content:"";display:inline-block;width:3px;height:10px;background:#b8953f;margin-right:8px;vertical-align:middle;border-radius:1px}
 
 .cta-bottom{padding:80px 5vw;text-align:center;background:#0d1526}
 .cta-bottom h2{font-size:28px;font-weight:700;color:#fff;margin-bottom:10px;letter-spacing:-0.3px}
@@ -93,7 +107,18 @@ tbody tr:last-child td{border-bottom:none}
 @media(max-width:900px){
 .cat-tabs{flex-wrap:wrap}
 .cat-tab{flex:1 1 30%}
-.stats-bar{flex-wrap:wrap}.stat-item{flex:1 1 50%;max-width:none}
+}
+
+@media(max-width:720px){
+.tiles{display:none !important}
+table th:nth-child(n+5),
+table td:nth-child(n+5){display:none}
+.table-head h2{font-size:18px}
+.nav-right .nav-link{display:none}
+.nav-burger{display:flex}
+.nav-right{gap:8px}
+.spark-cell{width:auto}
+.spark{width:100%;height:32px}
 }
 </style>
 </head>
@@ -114,7 +139,12 @@ tbody tr:last-child td{border-bottom:none}
       <a class="nav-link" href="https://www.parcapitalwm.com" target="_blank" rel="noopener">
         <span data-l="pt">Plataforma</span><span data-l="en">Platform</span><span data-l="es">Plataforma</span>
       </a>
-      <a class="nav-link active" href="#">Dashboard</a>
+      <a class="nav-link active" href="#">
+        <span data-l="pt">Mercados</span><span data-l="en">Markets</span><span data-l="es">Mercados</span>
+      </a>
+      <button class="nav-burger" id="nav-burger" onclick="toggleBurger()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
       <div class="lang-toggle" id="lang-toggle">
         <button class="lang-active" id="lang-btn" onclick="toggleLangDrop()">PT <span class="lang-arrow"></span></button>
         <div class="lang-drop" id="lang-drop">
@@ -125,13 +155,21 @@ tbody tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
+  <div class="nav-drawer" id="nav-drawer">
+    <a class="nav-link" href="https://www.parcapitalwm.com" target="_blank" rel="noopener">
+      <span data-l="pt">Plataforma</span><span data-l="en">Platform</span><span data-l="es">Plataforma</span>
+    </a>
+    <a class="nav-link active" href="#">
+      <span data-l="pt">Mercados</span><span data-l="en">Markets</span><span data-l="es">Mercados</span>
+    </a>
+  </div>
 </nav>
 
 <section class="hero">
   <div class="sec-label">Market Dashboard</div>
-  <div data-l="pt"><h1>Indicadores <em>em tempo real</em></h1></div>
-  <div data-l="en"><h1>Real-time <em>market indicators</em></h1></div>
-  <div data-l="es"><h1>Indicadores <em>en tiempo real</em></h1></div>
+  <div data-l="pt"><h1>Indicadores <em>de mercado</em></h1></div>
+  <div data-l="en"><h1><em>Market</em> indicators</h1></div>
+  <div data-l="es"><h1>Indicadores <em>de mercado</em></h1></div>
   <p class="sub" data-l="pt">Acompanhamento institucional dos principais mercados globais: renda variável, renda fixa, energia, commodities, ETFs, FX e cripto. Dados via Interactive Brokers.</p>
   <p class="sub" data-l="en">Institutional monitoring of the world's main markets: equities, fixed income, energy, commodities, ETFs, FX and crypto. Data via Interactive Brokers.</p>
   <p class="sub" data-l="es">Seguimiento institucional de los principales mercados globales: renta variable, renta fija, energía, commodities, ETFs, FX y cripto. Datos vía Interactive Brokers.</p>
@@ -140,10 +178,6 @@ tbody tr:last-child td{border-bottom:none}
       <span class="dot"></span>
       <span data-l="pt">Atualizado em</span><span data-l="en">Updated on</span><span data-l="es">Actualizado el</span>
       {{ updated_at }}
-    </span>
-    <span>
-      <span data-l="pt">Fonte:</span><span data-l="en">Source:</span><span data-l="es">Fuente:</span>
-      yfinance · IB
     </span>
   </div>
 </section>
@@ -174,33 +208,6 @@ tbody tr:last-child td{border-bottom:none}
   {% endfor %}
 </div>
 
-<div class="stats-bar">
-  <div class="stat-item">
-    <div class="stat-num">160+</div>
-    <div class="stat-label" data-l="pt">Mercados globais</div>
-    <div class="stat-label" data-l="en">Global markets</div>
-    <div class="stat-label" data-l="es">Mercados globales</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">34</div>
-    <div class="stat-label" data-l="pt">Países</div>
-    <div class="stat-label" data-l="en">Countries</div>
-    <div class="stat-label" data-l="es">Países</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">28</div>
-    <div class="stat-label" data-l="pt">Moedas</div>
-    <div class="stat-label" data-l="en">Currencies</div>
-    <div class="stat-label" data-l="es">Monedas</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">SIPC</div>
-    <div class="stat-label" data-l="pt">Proteção até USD 500k</div>
-    <div class="stat-label" data-l="en">Protection up to USD 500k</div>
-    <div class="stat-label" data-l="es">Protección hasta USD 500k</div>
-  </div>
-</div>
-
 <div class="table-wrap">
   <div class="table-head">
     <h2>
@@ -208,10 +215,6 @@ tbody tr:last-child td{border-bottom:none}
       <span data-l="en">Consolidated view</span>
       <span data-l="es">Vista consolidada</span>
     </h2>
-    <div class="filters">
-      <select class="filter-select"><option>USD</option><option>BRL</option><option>EUR</option></select>
-      <div class="kmb"><span>K</span><span class="active">M</span><span>B</span></div>
-    </div>
   </div>
 
   <table>
@@ -230,6 +233,11 @@ tbody tr:last-child td{border-bottom:none}
     </thead>
     <tbody id="tbody">
       {% for cat, items in data.items() %}
+        <tr class="cat-divider" data-cat="{{ cat }}">
+          <td colspan="9">
+            <span data-l="pt">{{ cat_labels[cat].pt }}</span><span data-l="en">{{ cat_labels[cat].en }}</span><span data-l="es">{{ cat_labels[cat].es }}</span>
+          </td>
+        </tr>
         {% for item in items %}
         <tr data-cat="{{ cat }}">
           <td>
@@ -238,19 +246,19 @@ tbody tr:last-child td{border-bottom:none}
               <span class="sub">{{ item.ticker }} · {{ item.sub }}</span>
             </div>
           </td>
-          <td class="num">{{ item.price_str }}</td>
-          <td class="num {{ 'pct-up' if item.daily_up else 'pct-down' }}">{{ item.daily_str }}</td>
-          <td>
-            <svg class="spark" width="140" height="36" viewBox="0 0 140 36">
+          <td class="num" data-label="Preço">{{ item.price_str }}</td>
+          <td class="num {{ 'pct-up' if item.daily_up else 'pct-down' }}" data-label="Daily %">{{ item.daily_str }}</td>
+          <td class="spark-cell">
+            <svg class="spark" width="140" height="36" viewBox="0 0 140 36" preserveAspectRatio="none">
               <polyline fill="{{ item.spark.fill }}" stroke="none" points="{{ item.spark.area }}"/>
               <polyline fill="none" stroke="{{ item.spark.color }}" stroke-width="1.5" points="{{ item.spark.line }}"/>
             </svg>
           </td>
-          <td class="num">{{ item.vol_str }}</td>
-          <td class="num {{ 'pct-up' if item.v1m_up else 'pct-down' }}">{{ item.v1m_str }}</td>
-          <td class="num {{ 'pct-up' if item.v1y_up else 'pct-down' }}">{{ item.v1y_str }}</td>
-          <td class="num">{{ item.low_str }}</td>
-          <td class="num">{{ item.high_str }}</td>
+          <td class="num" data-label="Volume">{{ item.vol_str }}</td>
+          <td class="num {{ 'pct-up' if item.v1m_up else 'pct-down' }}" data-label="Var 1M">{{ item.v1m_str }}</td>
+          <td class="num {{ 'pct-up' if item.v1y_up else 'pct-down' }}" data-label="Var 1Y">{{ item.v1y_str }}</td>
+          <td class="num" data-label="Low 52w">{{ item.low_str }}</td>
+          <td class="num" data-label="High 52w">{{ item.high_str }}</td>
         </tr>
         {% endfor %}
       {% endfor %}
@@ -287,6 +295,12 @@ tabs.forEach(function(tab){
     });
   });
 });
+
+// Mobile burger menu
+function toggleBurger() {
+  document.getElementById('nav-burger').classList.toggle('open');
+  document.getElementById('nav-drawer').classList.toggle('open');
+}
 
 // Language toggle (mirrors PAR Capital landing)
 function toggleLangDrop() {
