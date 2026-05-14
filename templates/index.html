@@ -243,11 +243,25 @@ function switchLang(lang) {
     }
   }
 }
-var browserLang = (navigator.language || navigator.userLanguage || 'pt').toLowerCase();
-var detectedLang = 'en';
-if (browserLang.indexOf('pt') === 0) { detectedLang = 'pt'; }
-else if (browserLang.indexOf('es') === 0) { detectedLang = 'es'; }
-switchLang(detectedLang);
+function normalizeLang(v) {
+  v = (v || '').toLowerCase();
+  if (v.indexOf('pt') === 0) return 'pt';
+  if (v.indexOf('es') === 0) return 'es';
+  if (v.indexOf('en') === 0) return 'en';
+  return null;
+}
+var params = new URLSearchParams(location.search);
+var fromUrl = normalizeLang(params.get('lang'));
+var fromBrowser = normalizeLang(navigator.language || navigator.userLanguage);
+switchLang(fromUrl || fromBrowser || 'pt');
+
+window.addEventListener('message', function (e) {
+  if (e.origin !== 'https://parcapitalwm.com' && e.origin !== 'https://www.parcapitalwm.com') return;
+  if (e.data && e.data.type === 'parc:setLang') {
+    var lang = normalizeLang(e.data.lang);
+    if (lang) switchLang(lang);
+  }
+});
 
 var tabs = document.querySelectorAll('.cat-tab');
 var rows = document.querySelectorAll('#tbody tr');
