@@ -21,6 +21,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);color:var(--text);-webkit-font-smoothing:antialiased;background:var(--white)}
+[data-l]{display:none !important}
 
 .hero{min-height:0;display:block;padding:56px 5vw 32px;max-width:1400px;margin:0 auto;gap:0}
 .sec-label{font-size:var(--f-sm);font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
@@ -225,6 +226,29 @@ table td:nth-child(n+5){display:none}
 </footer>
 
 <script>
+function switchLang(lang) {
+  var els = document.querySelectorAll('[data-l]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var show = el.getAttribute('data-l') === lang;
+    var tag = el.tagName.toLowerCase();
+    if (show) {
+      if (tag === 'span' || tag === 'a' || tag === 'em') {
+        el.style.cssText = 'display:inline !important';
+      } else {
+        el.style.cssText = 'display:block !important';
+      }
+    } else {
+      el.style.cssText = 'display:none !important';
+    }
+  }
+}
+var browserLang = (navigator.language || navigator.userLanguage || 'pt').toLowerCase();
+var detectedLang = 'en';
+if (browserLang.indexOf('pt') === 0) { detectedLang = 'pt'; }
+else if (browserLang.indexOf('es') === 0) { detectedLang = 'es'; }
+switchLang(detectedLang);
+
 var tabs = document.querySelectorAll('.cat-tab');
 var rows = document.querySelectorAll('#tbody tr');
 tabs.forEach(function(tab){
