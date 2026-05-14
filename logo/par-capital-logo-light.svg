@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="220" height="28" viewBox="0 0 220 28">
-  <rect x="0"  y="2" width="4.5" height="24" rx="0.5" fill="#8a9bae"/>
-  <rect x="7"  y="2" width="4.5" height="24" rx="0.5" fill="#8a9bae" opacity="0.5"/>
-  <rect x="14" y="2" width="4.5" height="24" rx="0.5" fill="#b8953f"/>
-  <text x="28" y="19" font-family="DM Sans, sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="#ffffff">PAR</text>
-  <text x="76" y="19" font-family="DM Sans, sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="#b8953f">Capital</text>
-</svg>
